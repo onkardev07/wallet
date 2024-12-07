@@ -81,7 +81,7 @@ app.post("/withdraw", async (req: any, res: any) => {
     });
   } catch (err) {
     console.error("Error processing withdrawal:", err);
-    return res.status(500).json({ message: "Internal server error onkar" });
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
 
