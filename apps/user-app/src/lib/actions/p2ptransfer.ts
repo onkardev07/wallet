@@ -7,49 +7,40 @@ export async function p2pTransfer(to: string, amount: number) {
   const session = await getServerSession(authOptions);
   const from = session?.user?.id;
 
-  // If the session doesn't exist or user is not authenticated
   if (!from) {
     throw new Error("Unauthenticated request");
   }
 
-  // Fetch the recipient user by mobile number
   const toUser = await prisma.user.findFirst({
     where: { mobile: to },
   });
 
-  // If recipient is not found, throw an error
   if (!toUser) {
     throw new Error("Recipient user not found");
   }
 
   try {
-    // Start the transaction
     await prisma.$transaction(async (tx: any) => {
-      // Lock the sender's balance for the transaction
       await tx.$queryRaw`SELECT * FROM "Balance" WHERE "userId" = ${from} FOR UPDATE`;
 
       const fromBalance = await tx.balance.findUnique({
         where: { userId: from },
       });
 
-      // If the sender's balance is insufficient, throw an error
       if (!fromBalance || fromBalance.amount < amount) {
         throw new Error("Insufficient funds");
       }
 
-      // Update sender's balance
       await tx.balance.update({
         where: { userId: from },
         data: { amount: { decrement: amount } },
       });
 
-      // Update recipient's balance
       await tx.balance.update({
         where: { userId: toUser.id },
         data: { amount: { increment: amount } },
       });
 
-      // Record successful transfer in the pPTransfer table
       await tx.pPTransfer.create({
         data: {
           fromUserId: from,
@@ -65,18 +56,16 @@ export async function p2pTransfer(to: string, amount: number) {
       message: "Transfer successful",
     };
   } catch (error: any) {
-    // If an error occurs during the transaction, log the failure in the database
     await prisma.pPTransfer.create({
       data: {
         fromUserId: from,
         toUserId: toUser.id,
         amount,
-        status: "Failure", // Marking as failure
+        status: "Failure",
         timestamp: new Date(),
       },
     });
 
-    // Return the error message
     return {
       message: `Transfer failed: ${error.message}`,
     };

@@ -3,29 +3,31 @@ import { p2pTransfer } from "@/lib/actions/p2ptransfer";
 import { Button } from "@repo/ui/button";
 import { Card } from "@repo/ui/card";
 import { TextInput } from "@repo/ui/textInput";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 export function SendCard() {
   const [number, setNumber] = useState("");
   const [amount, setAmount] = useState("");
   const [error, setError] = useState(""); // For error handling
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleP2PTransfer = async () => {
-    setLoading(true); // Start loading state
-    setError(""); // Clear any previous errors
+    setLoading(true);
+    setError("");
 
     try {
-      // Make the request
       const response = await p2pTransfer(number, Number(amount));
-
+      toast.success("Payment successful!");
+      router.push("/transfer");
       console.log("Response:", response);
-      // Handle success, maybe redirect the user or display a success message
     } catch (err) {
-      // console.error("Error during payment:", err);
-      setError("Payment failed. Please try again."); // Display error message to the user
+      toast.error("Payment failed. Please try again.");
+      setError("Payment failed. Please try again.");
     } finally {
-      setLoading(false); // End loading state
+      setLoading(false);
     }
   };
   return (

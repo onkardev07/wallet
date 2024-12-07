@@ -4,27 +4,18 @@ const cors = require("cors");
 const app = express();
 const prisma = new PrismaClient();
 
-// Apply CORS middleware
 app.use(
   cors({
-    origin: [
-      "http://user-app:3000",
-      "http://localhost:3000",
-      "http://localhost:5001",
-      "http://bank-server:5001",
-    ], // Allow requests from your frontend and bank server
-    methods: ["GET", "POST", "PUT", "DELETE"], // Include OPTIONS for preflight
-    credentials: true, // Allow cookies and credentials
+    origin: ["http://localhost:3000", "http://localhost:5001"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
   })
 );
 
-// Middleware to parse incoming JSON requests
 app.use(express.json());
 
-// Add custom middleware to handle preflight requests
-app.options("*", cors()); // Allow CORS preflight for all routes
+app.options("*", cors());
 
-// Webhook endpoint
 app.post("/hdfcwebhook", async (req: any, res: any) => {
   const paymentInfo = {
     token: req.body.token,
@@ -33,11 +24,6 @@ app.post("/hdfcwebhook", async (req: any, res: any) => {
   };
 
   try {
-    // Log for debugging
-    console.log("Updating balance for userId:", paymentInfo.userId);
-    console.log("Updating transaction for token:", paymentInfo.token);
-
-    // Fetch current balance
     const balanceBeforeUpdate = await prisma.balance.findUnique({
       where: {
         userId: paymentInfo.userId,
@@ -45,7 +31,6 @@ app.post("/hdfcwebhook", async (req: any, res: any) => {
     });
     console.log("Balance before update:", balanceBeforeUpdate);
 
-    // Perform transaction
     const transactionResults = await prisma.$transaction([
       prisma.balance.updateMany({
         where: {
@@ -116,7 +101,6 @@ app.post("/hdfcwebhookofframp", async (req: any, res: any) => {
       }),
     ]);
 
-    // console.log("Transaction result:", transactionResults);
     res.json({
       message: "Captured",
     });

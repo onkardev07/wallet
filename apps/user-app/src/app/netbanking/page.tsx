@@ -3,11 +3,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import Image from "next/image";
 import { FormProvider, useForm } from "react-hook-form";
-import { signinSchema } from "@/zod-schemas/Signin"; // Your Zod schema
+import { signinSchema } from "@/zod-schemas/Signin";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
-import axios from "axios"; // Make sure to import axios
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 import {
   FormControl,
@@ -20,8 +22,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 const LogIn = () => {
-  const [error, setError] = useState(""); // For error handling
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const formMethods = useForm<z.infer<typeof signinSchema>>({
     resolver: zodResolver(signinSchema),
@@ -31,35 +34,42 @@ const LogIn = () => {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof signinSchema>) {
-    setLoading(true); // Start loading state
-    setError(""); // Clear any previous errors
+  const onSubmit = async (values: z.infer<typeof signinSchema>) => {
+    setLoading(true);
+    setError("");
 
     try {
-      // Make the request
-      const response = await axios.post("http://bank-server:5001/withdraw", {
+      const response = await axios.post("http://localhost:5001/withdraw", {
         token: localStorage.getItem("transToken"),
-        webhookUrl: "http://webhook:5000/hdfcwebhook",
+        webhookUrl: "http://localhost:5000/hdfcwebhook",
         username: values.username,
         password: values.password,
       });
+
       localStorage.clear();
-      console.log("Response:", response.data);
-      // Handle success, maybe redirect the user or display a success message
+
+      // Display success toast
+      toast.success("Payment successful!");
+
+      // Redirect to transfer page
+      router.push("/transfer");
+
+      console.log("Payment success:", response.data);
     } catch (err) {
       console.error("Error during payment:", err);
-      setError("Payment failed. Please try again."); // Display error message to the user
+      setError("Payment failed. Please try again.");
+      toast.error("Payment failed. Please try again."); // Display error toast
     } finally {
-      setLoading(false); // End loading state
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="w-full max-w-sm p-6 space-y-3 bg-white rounded-lg shadow-md">
         <div className="flex justify-center">
           <Avatar>
-            <AvatarImage asChild src="/Payment.png">
+            <AvatarImage asChild>
               <Image src="/Payment.png" alt="logo" width={40} height={40} />
             </AvatarImage>
             <AvatarFallback>N</AvatarFallback>
@@ -70,7 +80,6 @@ const LogIn = () => {
           Login to Net Banking
         </div>
 
-        {/* Form Section */}
         <FormProvider {...formMethods}>
           <form
             onSubmit={formMethods.handleSubmit(onSubmit)}
@@ -111,7 +120,6 @@ const LogIn = () => {
           </form>
         </FormProvider>
 
-        {/* Display Error Message if Any */}
         {error && <p className="text-red-500 text-center">{error}</p>}
       </div>
     </div>

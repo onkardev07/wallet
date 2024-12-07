@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@repo/db/client"; // Adjust based on your Prisma client location
+import prisma from "@repo/db/client";
 
 export async function POST(req: NextRequest) {
   try {

@@ -38,10 +38,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Hash the password using bcrypt
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create the new user in the database
     const newUser = await prisma.user.create({
       data: {
         username,
@@ -52,11 +50,10 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Initialize the user balance with 0
     const userBalance = await prisma.balance.create({
       data: {
         amount: 0,
-        userId: newUser.id, // associate balance with the new user
+        userId: newUser.id,
       },
     });
 

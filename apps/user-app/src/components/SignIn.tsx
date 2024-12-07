@@ -21,15 +21,15 @@ import { useState } from "react";
 import Link from "next/link";
 
 interface SignInResponse {
-  status?: string; // Can be "unverified" or undefined
-  id?: number; // User ID if returned
-  error?: string; // Error message if any
-  ok?: boolean; // Indicates successful sign-in
+  status?: string;
+  id?: number;
+  error?: string;
+  ok?: boolean;
 }
 
 const SignIn = () => {
   const router = useRouter();
-  const [error, setError] = useState(""); // For error handling
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const formMethods = useForm<z.infer<typeof signinSchema>>({
@@ -47,7 +47,7 @@ const SignIn = () => {
         username: values.username,
         password: values.password,
         redirect: false,
-      })) as unknown as SignInResponse; // First cast to unknown, then to custom type
+      })) as unknown as SignInResponse;
 
       console.log("res" + JSON.stringify(result));
 
@@ -114,14 +114,13 @@ const SignIn = () => {
             />
 
             <div className="flex pt-[10px] justify-center">
-              {/* <Button type="submit">Sign In</Button> */}
               <Button type="submit" disabled={loading}>
                 {loading ? "Signing In..." : "Sign In"}
               </Button>
             </div>
           </form>
         </FormProvider>
-        {/* <div>Don't have an account Signup Now</div> */}
+
         <div className="text-center font-sans text-[14px]">
           Don't have an account?{" "}
           <Link href="/signup" className="text-blue-500 underline">
@@ -129,7 +128,6 @@ const SignIn = () => {
           </Link>
         </div>
 
-        {/* Display Error Message if Any */}
         {error && <p className="text-red-500 text-center">{error}</p>}
       </div>
     </div>

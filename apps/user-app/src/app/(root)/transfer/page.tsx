@@ -52,9 +52,9 @@ async function getOffRampTransactions() {
 export default async function () {
   const balance = await getBalance();
   const onRampTransactions = await getOnRampTransactions();
-  // const offRampTransactions = await getOffRampTransactions();
+
   const combinedTransactions = [...onRampTransactions];
-  // console.log("offramp", offRampTransactions);
+
   return (
     <div className="w-screen">
       <div className="text-4xl text-[#6a51a6] pt-8 mb-8 font-bold">

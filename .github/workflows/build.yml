@@ -3,7 +3,7 @@ name: Build on PR
 on:
   pull_request:
     branches:
-      - main # change this if your branch is master or something else
+      - main
 
 jobs:
   build:

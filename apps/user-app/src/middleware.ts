@@ -1,7 +1,7 @@
 /* eslint-disable turbo/no-undeclared-env-vars */
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-import type { NextRequest } from "next/server"; // Import type
+import type { NextRequest } from "next/server";
 
 export async function middleware(req: NextRequest) {
   const token = await getToken({
@@ -18,19 +18,16 @@ export async function middleware(req: NextRequest) {
   //   return NextResponse.redirect(new URL("/verify", req.url));
   // }
 
-  // If token is found, restrict access to /signin, /signup
   const restrictedRoutes = ["/signin", "/signup"];
   if (token && restrictedRoutes.includes(req.nextUrl.pathname)) {
-    return NextResponse.redirect(new URL("/home", req.url)); // Redirect authenticated users to /home
+    return NextResponse.redirect(new URL("/home", req.url));
   }
 
-  // If token is not found, redirect to /signin when accessing protected pages
   const protectedRoutes = ["/home", "/transfer", "/transactions", "/verify"];
   if (!token && protectedRoutes.includes(req.nextUrl.pathname)) {
     return NextResponse.redirect(new URL("/signin", req.url));
   }
 
-  // Continue if conditions are met
   return NextResponse.next();
 }
 
@@ -42,5 +39,5 @@ export const config = {
     "/signin",
     "/signup",
     "/verify",
-  ], // Middleware will run only for these routes
+  ],
 };

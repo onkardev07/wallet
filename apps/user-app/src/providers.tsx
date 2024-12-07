@@ -1,11 +1,14 @@
 "use client";
 import { RecoilRoot } from "recoil";
 import { SessionProvider } from "next-auth/react";
+import { Toaster } from "react-hot-toast";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <RecoilRoot>
-      <SessionProvider>{children}</SessionProvider>
+      <SessionProvider>
+        <Toaster position="top-center" /> {children}
+      </SessionProvider>
     </RecoilRoot>
   );
 };

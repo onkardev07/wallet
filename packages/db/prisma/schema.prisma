@@ -22,10 +22,8 @@ model User {
   verification Boolean
   balance Balance?
   transactions BankTransaction[]
-  // withdraw OffRampTransaction[]
   p2psent PPTransfer[] @relation(name: "P2PFromUser")
   p2preceived PPTransfer[] @relation(name: "P2PToUser")
-  // banktransactions HDFCTransaction[]
 }
 
 

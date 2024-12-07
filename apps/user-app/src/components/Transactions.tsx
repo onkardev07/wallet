@@ -132,8 +132,6 @@ export default async function TransactionList() {
   const bankTransactions = await getBankTransactions();
   const transactions: TotalTrans[] = [...P2PTransactions, ...bankTransactions];
 
-  // console.log("TOTAL TRANS", JSON.stringify(totalTransactions));
-
   return (
     <div className="">
       <Table className="">

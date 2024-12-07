@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useState } from "react";
 import axios from "axios"; // For making HTTP requests
+import toast from "react-hot-toast";
 
 import {
   FormControl,
@@ -24,12 +25,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 type AccountDetailsForm = z.infer<typeof accountDetailsSchema>;
 
 const AccountDetails = () => {
-  const [error, setError] = useState(""); // For error handling
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   // Initialize form methods
   const formMethods = useForm<AccountDetailsForm>({
-    resolver: zodResolver(accountDetailsSchema), // Use Zod schema for validation
+    resolver: zodResolver(accountDetailsSchema),
     defaultValues: {
       accno: "",
     },
@@ -37,26 +38,26 @@ const AccountDetails = () => {
 
   // Function to handle form submission
   async function onSubmit(values: AccountDetailsForm) {
-    setLoading(true); // Start loading state
-    setError(""); // Clear any previous errors
+    setLoading(true);
+    setError("");
 
     try {
       // Make the request
-      const response = await axios.post("http://bank-server:5001/deposit", {
+      const response = await axios.post("http://localhost:5001/deposit", {
         token: localStorage.getItem("offRampToken"),
-        webhookUrl: "http://webhook:5000/hdfcwebhookofframp",
+        webhookUrl: "http://localhost:5000/hdfcwebhookofframp",
         accno: values.accno,
       });
       localStorage.clear();
+      toast.success("Withdrawal successful!");
       router.push("/transfer");
       console.log("Response:", response.data);
-      // Handle success, maybe redirect the user or display a success message
     } catch (err) {
-      //   console.log("onkar failed", err);
       console.error("Error during payment:", err);
-      setError("Payment failed. Please try again."); // Display error message to the user
+      toast.error("Payment failed. Please try again.");
+      setError("Payment failed. Please try again.");
     } finally {
-      setLoading(false); // End loading state
+      setLoading(false);
     }
   }
 

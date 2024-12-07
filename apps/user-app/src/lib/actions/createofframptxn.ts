@@ -42,7 +42,6 @@ export async function createOffRampTxn(amount: number, provider: string) {
       },
     });
 
-    // Revalidate path if necessary
     revalidatePath("/transfer");
 
     return {

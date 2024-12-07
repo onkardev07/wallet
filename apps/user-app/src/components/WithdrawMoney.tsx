@@ -12,19 +12,18 @@ export const WithdrawMoney = () => {
   const [loading, setLoading] = useState(false);
 
   const handleWithdrawMoney = async () => {
-    setLoading(true); // Start loading state
-    setError(""); // Clear any previous errors
+    setLoading(true);
+    setError("");
     console.log("withdraw clicked");
     try {
       const response = await createOffRampTxn(Number(value), "SELF");
       console.log("response", response);
-      setValue(""); // Reset form value
+      setValue("");
       localStorage.setItem("offRampToken", response.transToken || "");
       window.location.href = "http://localhost:3000/accountdetails";
     } catch (error: any) {
       console.error("Error during withdrawal:", error.message);
       setError(error.message);
-      //   alert(error.message); // Display an error to the user
     } finally {
       setLoading(false);
     }
@@ -39,13 +38,6 @@ export const WithdrawMoney = () => {
           onChange={(val) => setValue(val)}
           value={value}
         />
-
-        {/* <TextInput
-          label={"Account Number"}
-          placeholder={"Account Number"}
-          onChange={(val) => setAccno(val)}
-          value={value}
-        /> */}
 
         <Button
           className="w-[150px] bg-[#3779b8] py-[10px] text-[white] rounded-md text-[16px] flex items-center justify-center text-center mt-[20px] mx-auto"
